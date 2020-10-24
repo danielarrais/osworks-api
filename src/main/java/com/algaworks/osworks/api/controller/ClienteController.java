@@ -10,6 +10,7 @@ import java.util.List;
 @RestController
 public class ClienteController {
 
+    // Exemplo de rota indepotentes (que não altera o estado)
     @GetMapping("/clientes")
     public List<Cliente> listar() {
         var cliente1 = Cliente.builder()
