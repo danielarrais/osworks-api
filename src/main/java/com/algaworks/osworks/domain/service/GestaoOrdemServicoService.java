@@ -8,7 +8,7 @@ import com.algaworks.osworks.domain.repository.ClienteRepository;
 import com.algaworks.osworks.domain.repository.OrdemServicoRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Service
 public class GestaoOrdemServicoService {
@@ -24,7 +24,7 @@ public class GestaoOrdemServicoService {
         verificarSeClienteExiste(ordemServico.getCliente());
 
         ordemServico.setStatus(StatusOrdemServico.ABERTA);
-        ordemServico.setDataAbertura(LocalDateTime.now());
+        ordemServico.setDataAbertura(OffsetDateTime.now());
 
         recarregarCliente(ordemServico);
 
