@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface ClienteRepository extends JpaRepository<Cliente, Long> {
     List<Cliente> findByNome(String nome);
+    Boolean existsByEmailAndIdNot(String nome, Long id);
 }
