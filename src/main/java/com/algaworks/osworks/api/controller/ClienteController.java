@@ -3,6 +3,7 @@ package com.algaworks.osworks.api.controller;
 import com.algaworks.osworks.domain.model.Cliente;
 import com.algaworks.osworks.domain.repository.ClienteRepository;
 import com.algaworks.osworks.domain.service.CadastroClienteService;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,10 +18,12 @@ public class ClienteController {
 
     private final ClienteRepository clienteRepository;
     private final CadastroClienteService cadastroClienteService;
+    private final ModelMapper modelMapper;
 
-    public ClienteController(ClienteRepository clienteRepository, CadastroClienteService cadastroClienteService) {
+    public ClienteController(ClienteRepository clienteRepository, CadastroClienteService cadastroClienteService, ModelMapper modelMapper) {
         this.clienteRepository = clienteRepository;
         this.cadastroClienteService = cadastroClienteService;
+        this.modelMapper = modelMapper;
     }
 
     // Exemplo de rota indepotentes (que não altera o estado)
@@ -55,7 +58,6 @@ public class ClienteController {
 
         return ResponseEntity.ok(cliente);
     }
-
 
 
     @DeleteMapping("/{clienteId}")
