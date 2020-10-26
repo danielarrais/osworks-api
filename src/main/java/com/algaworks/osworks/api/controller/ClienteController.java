@@ -1,5 +1,6 @@
 package com.algaworks.osworks.api.controller;
 
+import com.algaworks.osworks.api.dto.ClienteDTO;
 import com.algaworks.osworks.domain.model.Cliente;
 import com.algaworks.osworks.domain.repository.ClienteRepository;
 import com.algaworks.osworks.domain.service.CadastroClienteService;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/clientes")
@@ -28,27 +30,36 @@ public class ClienteController {
 
     // Exemplo de rota indepotentes (que não altera o estado)
     @GetMapping
-    public List<Cliente> listar() {
-        return clienteRepository.findAll();
+    public List<ClienteDTO> listar() {
+        return toListDTO(clienteRepository.findAll());
     }
 
     @GetMapping("/{clienteId}")
-    public ResponseEntity<Cliente> buscar(@PathVariable Long clienteId) {
+    public ResponseEntity<ClienteDTO> buscar(@PathVariable Long clienteId) {
         Optional<Cliente> optionalCliente = clienteRepository.findById(clienteId);
 
-        return optionalCliente
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        if (optionalCliente.isPresent()) {
+            ClienteDTO ordemServicoDTO = toDTO(optionalCliente.get());
+
+            return ResponseEntity.ok(ordemServicoDTO);
+        }
+
+        return ResponseEntity.notFound().build();
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Cliente adicionar(@Valid @RequestBody Cliente cliente) {
-        return cadastroClienteService.salvar(cliente);
+    public ClienteDTO adicionar(@Valid @RequestBody ClienteDTO clienteDTO) {
+        Cliente cliente = toModel(clienteDTO);
+        cliente = cadastroClienteService.salvar(cliente);
+
+        return toDTO(cliente);
     }
 
     @PutMapping("/{clienteId}")
-    public ResponseEntity<Cliente> atualizar(@Valid @PathVariable Long clienteId, @RequestBody Cliente cliente) {
+    public ResponseEntity<ClienteDTO> atualizar(@Valid @PathVariable Long clienteId, @RequestBody ClienteDTO clienteDTO) {
+        Cliente cliente = toModel(clienteDTO);
+
         if (!clienteRepository.existsById(clienteId)) {
             return ResponseEntity.notFound().build();
         }
@@ -56,7 +67,7 @@ public class ClienteController {
         cliente.setId(clienteId);
         cliente = cadastroClienteService.salvar(cliente);
 
-        return ResponseEntity.ok(cliente);
+        return ResponseEntity.ok(toDTO(cliente));
     }
 
 
@@ -69,4 +80,17 @@ public class ClienteController {
         clienteRepository.deleteById(clienteId);
         return ResponseEntity.noContent().build();
     }
+
+    private ClienteDTO toDTO(Cliente ordemServico) {
+        return modelMapper.map(ordemServico, ClienteDTO.class);
+    }
+
+    private Cliente toModel(ClienteDTO ordemServico) {
+        return modelMapper.map(ordemServico, Cliente.class);
+    }
+
+    private List<ClienteDTO> toListDTO(List<Cliente> ordensServico) {
+        return ordensServico.stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
 }
