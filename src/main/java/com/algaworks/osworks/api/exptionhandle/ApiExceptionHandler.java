@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 
 @ControllerAdvice
@@ -43,7 +43,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         var problema = Problema.builder()
                 .status(status.value())
                 .titulo("Um ou mais campos estão inválidos")
-                .dataHora(LocalDateTime.now())
+                .dataHora(OffsetDateTime.now())
                 .errosValidacao(errosValidacao).build();
 
         return super.handleExceptionInternal(ex, problema, headers, status, request);
@@ -53,7 +53,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleNegocio(NegocioException negocioException, WebRequest request){
         var status = HttpStatus.BAD_REQUEST;
         var problema = Problema.builder()
-                .dataHora(LocalDateTime.now())
+                .dataHora(OffsetDateTime.now())
                 .titulo(negocioException.getMessage())
                 .status(status.value()).build();
 
